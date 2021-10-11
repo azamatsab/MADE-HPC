@@ -1,48 +1,83 @@
-#### Linpack output:
+1. Реализовать классическое перемножение матриц и умножение матрицы на вектор на C/C++: Реализация в файле __matmul.cpp__
 
-Sample data file lininput_xeon64.
+2. Разбейте на модули, со статической линковкой скомпилируйте текст, подготовьте Makefile, проверьте флаги -g, -O3: файлы __matmul.cpp__ __main.cpp__ __Makefile__ в директории. -O3 или -g передаются через флаг __EXTFLAGS__
 
-Current date/time: Sun Oct 10 22:18:55 2021
+#### command: make
 
-CPU frequency:    4.499 GHz
-Number of CPUs: 1
-Number of cores: 6
-Number of threads: 6
+        Matrix mult: ijk run time is: 0.75526
 
-Parameters are set to:
+        Matrix mult: jik run time is: 0.779777
 
-Number of tests: 5
-Number of equations to solve (problem size) : 1000  2000  5000  10000 20000
-Leading dimension of array                  : 1000  2000  5008  10000 20000
-Number of trials to run                     : 4     2     2     2     1    
-Data alignment value (in Kbytes)            : 4     4     4     4     4    
+        Matrix mult: kij run time is: 0.401694
 
-Maximum memory requested that can be used=3200404096, at the size=20000
+        Matrix to vector mult: run time is: 0.00355
 
-=================== Timing linear equation system solver ===================
+#### command: make -EXTFLAGS='-O3' 
 
-Size   LDA    Align. Time(s)    GFlops   Residual     Residual(norm) Check
-1000   1000   4      0.003      205.4947 9.394430e-13 3.203742e-02   pass
-1000   1000   4      0.004      189.0014 9.394430e-13 3.203742e-02   pass
-1000   1000   4      0.003      207.4709 9.394430e-13 3.203742e-02   pass
-1000   1000   4      0.003      219.0231 9.394430e-13 3.203742e-02   pass
-2000   2000   4      0.048      111.3705 3.842024e-12 3.342090e-02   pass
-2000   2000   4      0.046      115.9297 3.842024e-12 3.342090e-02   pass
-5000   5008   4      0.336      248.4300 2.313949e-11 3.226615e-02   pass
-5000   5008   4      0.335      249.0125 2.313949e-11 3.226615e-02   pass
-10000  10000  4      2.352      283.5113 9.955517e-11 3.510416e-02   pass
-10000  10000  4      2.395      278.4902 9.955517e-11 3.510416e-02   pass
-20000  20000  4      18.362     290.4959 3.520981e-10 3.116839e-02   pass
+        Matrix mult: ijk run time is: 0.262969
 
-Performance Summary (GFlops)
+        Matrix mult: jik run time is: 0.268058
 
-Size   LDA    Align.  Average  Maximal
-1000   1000   4       205.2475 219.0231
-2000   2000   4       113.6501 115.9297
-5000   5008   4       248.7213 249.0125
-10000  10000  4       281.0007 283.5113
-20000  20000  4       290.4959 290.4959
+        Matrix mult: kij run time is: 0.046232
 
-Residual checks PASSED
+        Matrix to vector mult: run time is: 0.00123
 
-End of tests
+
+3. Измерьте времена исполнения для размеров N = 500, 512, 1000, 1024, 2000, 2048 
+Все команды выполнены с флагом __O3__
+###### N = 500:
+        Matrix mult: ijk run time is: 0.149832
+        
+        Matrix mult: jik run time is: 0.130572
+        
+        Matrix mult: kij run time is: 0.045606
+        
+        Matrix to vector mult: run time is: 0.000624
+        
+###### N = 512:
+        Matrix mult: ijk run time is: 0.278448
+        
+        Matrix mult: jik run time is: 0.267043
+        
+        Matrix mult: kij run time is: 0.045168
+        
+        Matrix to vector mult: run time is: 0.000275
+
+###### N = 1000:
+        Matrix mult: ijk run time is: 1.3334
+        
+        Matrix mult: jik run time is: 1.2496
+        
+        Matrix mult: kij run time is: 0.344876
+        
+        Matrix to vector mult: run time is: 0.001065
+        
+###### N = 1024:
+        Matrix mult: ijk run time is: 2.44418
+        
+        Matrix mult: jik run time is: 2.28913
+        
+        Matrix mult: kij run time is: 0.388196
+        
+        Matrix to vector mult: run time is: 0.001221
+        
+###### N = 2000:
+        Matrix mult: ijk run time is: 28.6923
+        
+        Matrix mult: jik run time is: 27.0391
+        
+        Matrix mult: kij run time is: 4.91789
+        
+        Matrix to vector mult: run time is: 0.004674
+        
+###### N = 2048:
+        Matrix mult: ijk run time is: 45.9769
+        
+        Matrix mult: jik run time is: 36.4702
+        
+        Matrix mult: kij run time is: 6.20823
+        
+        Matrix to vector mult: run time is: 0.004632
+
+4. И базовые скрипты баш: Скрипты в папке __bash_scripts__
+5. Бонус за линпак: результат в файле __linpack_out.png__
