@@ -2,7 +2,7 @@
 #define matmul
 
 void ZeroMatrix(double *A, size_t N);
-void ZeroMatrix(double *A, size_t R, size_t C);
+void ZeroVector(double * A, size_t N);
 void RandomMatrix(double *A, size_t N);
 void RandomVector(double *A, size_t N);
 

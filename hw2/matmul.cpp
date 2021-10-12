@@ -1,7 +1,5 @@
 #include <time.h>
-
 #include <cstdlib>
-
 #include <iostream>
 
 using namespace std;
@@ -14,12 +12,9 @@ void ZeroMatrix(double * A, size_t N) {
   }
 }
 
-void ZeroMatrix(double * A, size_t R, size_t C) {
-  for (size_t i = 0; i < C; i++) {
-    for (size_t j = 0; j < R; j++) {
-      A[i * R + j] = 0.0;
-    }
-  }
+void ZeroVector(double * A, size_t N) {
+  for (size_t j = 0; j < N; j++)
+      A[j] = 0.0;
 }
 
 void RandomMatrix(double * A, size_t N) {
@@ -41,7 +36,6 @@ void RandomVector(double * A, size_t N) {
 double CalcMatMulTime_ijk(double * A, double * B, double * C, size_t N) {
   clock_t tStart = clock();
   size_t i, j, k;
-
   ZeroMatrix(C, N);
 
   for (i = 0; i < N; i++)
@@ -56,7 +50,6 @@ double CalcMatMulTime_ijk(double * A, double * B, double * C, size_t N) {
 double CalcMatMulTime_jik(double * A, double * B, double * C, size_t N) {
   clock_t tStart = clock();
   size_t i, j, k;
-
   ZeroMatrix(C, N);
 
   for (j = 0; j < N; j++)
@@ -71,7 +64,6 @@ double CalcMatMulTime_jik(double * A, double * B, double * C, size_t N) {
 double CalcMatMulTime_kij(double * A, double * B, double * C, size_t N) {
   clock_t tStart = clock();
   size_t i, j, k;
-
   ZeroMatrix(C, N);
 
   for (k = 0; k < N; k++)
@@ -86,7 +78,7 @@ double CalcMatMulTime_kij(double * A, double * B, double * C, size_t N) {
 double CalcMatVecMulTime(double * A, double * B, double * C, size_t N) {
   clock_t tStart = clock();
   size_t i, j;
-  ZeroMatrix(C, N, 1);
+  ZeroVector(C, N);
 
   for (i = 0; i < N; i++)
     for (j = 0; j < N; j++)

@@ -4,7 +4,7 @@
 
 using namespace std;
 
-const int N_SIZE = 2048;
+const int N_SIZE = 512;
 
 int main() {
   double * A = new double[N_SIZE * N_SIZE];
