@@ -24,7 +24,6 @@ int main (int argc, char *argv[])
     float sum;
     float a[N], b[N];
 
-
     for (i = 0; i < N; ++i)
     {
         a[i] = b[i] = (double)i;
