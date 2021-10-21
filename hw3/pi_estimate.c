@@ -15,7 +15,6 @@ int main() {
 #pragma omp parallel private(x, y, z, tid, seed) reduction(+:count)
     tid = omp_get_thread_num();
     seed = (unsigned) time(NULL);
-    seed = 1;
     seed = (seed & 0xFFFFFFF0) | (tid + 1);
     srand(seed);
 
