@@ -8,7 +8,7 @@
 int main() {
     int i, count, tid;
     double x, y, z, pi;
-    unsigned long n = 1000000;
+    unsigned long n = 1 << 22;
     unsigned int seed;
     count = 0;
 
