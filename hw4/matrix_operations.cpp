@@ -48,7 +48,7 @@ void MatPower(double * A, double * C, size_t N, size_t power) {
     delete (temp);
 }
 
-void PrintMatrix(double * C, size_t col, size_t row) {
+void PrintMatrix(double * C, size_t row, size_t col) {
     for(int i = 0; i < row; i++) {
         for(int j = 0; j < col; j++)
             printf("%f  ", C[i * col + j]);
