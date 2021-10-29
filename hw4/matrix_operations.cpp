@@ -24,7 +24,7 @@ void CopyMatrix(double * A, double * C, size_t row, size_t col) {
     #pragma omp for collapse(2)
     for (int i = 0; i < row; i++) {
         for (int j = 0; j < col; j++)
-            C[j * col + i] = A[j * col + i];
+            C[i * col + j] = A[i * col + j];
     }
 }
 
@@ -51,7 +51,7 @@ void MatPower(double * A, double * C, size_t N, size_t power) {
 void PrintMatrix(double * C, size_t col, size_t row) {
     for(int i = 0; i < row; i++) {
         for(int j = 0; j < col; j++)
-            printf("%f  ", C[i * row + j]);
+            printf("%f  ", C[i * col + j]);
         printf("\n");
     }
     printf("\n");
