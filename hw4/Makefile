@@ -8,10 +8,10 @@ LIBS=-lblas -lcblas -fopenmp -m64 -I${MKLROOT}/include -Wl,--no-as-needed -L${MK
 all: $(EXECUTABLE)
 
 task1: $(SOURCES1)
-			$(CXX) $(SOURCES1) $(LIBS) -o task1
+			$(CXX) $(SOURCES1) $(LIBS) $(EXTFLAGS) -o task1
 
 task2: $(SOURCES2)
-			$(CXX) $(SOURCES2) $(LIBS) -o task2
+			$(CXX) $(SOURCES2) $(LIBS) $(EXTFLAGS) -o task2
 
 clean:
 	rm -rf *o task1 task2
