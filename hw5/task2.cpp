@@ -12,7 +12,10 @@
 
 #include <mpi.h>
 #include <stdio.h>
-#include <random> 
+#include <random>
+#include <tuple>
+#include <map>
+#include <vector>
 
 using namespace std;
 
@@ -21,7 +24,32 @@ struct Cell {
 	int left;
 };
 
-const int PERIODIC = 1;
+const int PERIODIC = 0;
+const int NUM_SIMS = 200;
+const size_t N_LINE = 1024;
+const bool RULE110 = false;
+
+using KeyType = tuple<int, int, int>;
+map<KeyType, int> rules110 = { 
+                                { {1, 1, 1}, 0 },
+                                { {1, 1, 0}, 1 },
+                                { {1, 0, 1}, 1 },
+                                { {1, 0, 0}, 0 },
+                                { {0, 1, 1}, 1 },
+                                { {0, 1, 0}, 1 },
+                                { {0, 0, 1}, 1 },
+                                { {0, 0, 0}, 0 },
+                                };
+map<KeyType, int> rules126 = { 
+                                { {1, 1, 1}, 0 },
+                                { {1, 1, 0}, 1 },
+                                { {1, 0, 1}, 1 },
+                                { {1, 0, 0}, 1 },
+                                { {0, 1, 1}, 1 },
+                                { {0, 1, 0}, 1 },
+                                { {0, 0, 1}, 1 },
+                                { {0, 0, 0}, 0 },
+                            };
 
 void random_array(int* array, size_t size, int rank) {
     unsigned seed = (unsigned) time(NULL);
@@ -50,7 +78,9 @@ Cell get_cell(int* array, int left, size_t size) {
     return ghost_send;
 }
 
-void update(int rank, size_t size, int* array, size_t array_length, MPI_Datatype mpi_cell_type, int left_neighbor, int right_neighbor, Cell left_ghost_send, Cell right_ghost_send, Cell received) {
+void update_ghosts(int rank, size_t size, int* array, size_t array_length, 
+                    MPI_Datatype mpi_cell_type, int left_neighbor, int right_neighbor, 
+                    Cell left_ghost_send, Cell right_ghost_send, Cell received) {
     if (rank == 0) {
         if (PERIODIC) {
             MPI_Ssend(&left_ghost_send, 1, mpi_cell_type, left_neighbor, 0, MPI_COMM_WORLD);
@@ -88,10 +118,21 @@ void update(int rank, size_t size, int* array, size_t array_length, MPI_Datatype
     }
 }
 
+void update_array(int* arr, size_t size, map<KeyType, int>* rules) {
+    for (int i = 1; i < size - 1; i++) {
+        auto state = make_tuple (arr[i - 1], arr[i], arr[i + 1]);
+        arr[i] = rules->at(state);
+    }
+}
+
 int main(int argc,char **argv)
 {
-    const size_t N_LINE = 32;
-    int* array  = new int[N_LINE + 2];
+    map< KeyType, int> rules;
+    if (RULE110)
+        rules = rules110;
+    else
+        rules = rules126;
+
 	int rank, size;
 	MPI_Status status;
 
@@ -108,19 +149,41 @@ int main(int argc,char **argv)
 
     MPI_Cart_create(MPI_COMM_WORLD, ndim, &dims, &periods, 0, &ring_1D);
 
-    random_array(array, N_LINE, rank);
-
     int datasize = 2 * sizeof(int);
 	MPI_Datatype mpi_cell_type;
 	MPI_Type_contiguous(datasize, MPI_INT, &mpi_cell_type);
 	MPI_Type_commit(&mpi_cell_type);
 
+    int arr_size = N_LINE / size;
+    int* array  = new int[arr_size + 2];
+    random_array(array, arr_size, rank);
+    printf("Generated array with size %d \n", arr_size);
+
     int left_neighbor, right_neighbor;
     MPI_Cart_shift(ring_1D, 0, 1, &left_neighbor, &right_neighbor);
-    Cell left_ghost_send = get_cell(array, 1, N_LINE);
-    Cell right_ghost_send = get_cell(array, 0, N_LINE);
+
+    Cell left_ghost_send;
+    Cell right_ghost_send;
     Cell received;
-    update(rank, size, array, N_LINE, mpi_cell_type, left_neighbor, right_neighbor, left_ghost_send, right_ghost_send, received);
+    int flag;
+
+    for (int t = 0; t < NUM_SIMS; t++) {
+        left_ghost_send = get_cell(array, 1, arr_size);
+        right_ghost_send = get_cell(array, 0, arr_size);
+        if (size > 1)
+            update_ghosts(rank, size, array, arr_size, mpi_cell_type, left_neighbor, right_neighbor, left_ghost_send, right_ghost_send, received);
+        update_array(array, arr_size, &rules);
+
+        if (rank == 0) {
+            for (int r = 0; r < size - 1; r++) {
+                MPI_Recv(&flag, 1, MPI_INT, MPI_ANY_SOURCE, 2020, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            }
+        }
+        else {
+            MPI_Ssend(&rank, 1, MPI_INT, 0, 2020, MPI_COMM_WORLD);
+        }
+    }
+
 	MPI_Finalize();
     return 0;
 }
